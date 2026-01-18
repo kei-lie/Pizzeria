@@ -3,6 +3,7 @@ package Pica;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -11,6 +12,19 @@ import javax.swing.ScrollPaneConstants;
 
 
 public class Picerija {
+	
+	public static String virknesParbaude(String zinojums, String noklusejums) {
+		String virkne;
+		do {
+			virkne = JOptionPane.showInputDialog(zinojums, noklusejums);
+			if(virkne == null) return null;
+			
+			virkne = virkne.trim();
+		}while(!Pattern.matches("^[\\p{L} .]+$", virkne));
+		return virkne;
+	}
+	
+	
 	static Queue<Pica> Pasutijumi = new LinkedList<>();
 	static Queue<Pica> Izpilditie = new LinkedList<>();
 	static String[] darbibas = {"Darbinieks", "Klients", "Apturēt"};
@@ -23,7 +37,6 @@ public class Picerija {
 	static boolean piegade, vaiUzk, vaiDzer;
 	static String[] adrese = {"Zāļu iela 54", "Krūmu iela 2", "O. Kalpaka iela 39"};
 	static int[] TelNr = {26748391, 29185046, 62371948, 26897425, 29516038};
-	static double c;
 	static double maks = 0.0;
 	
 	public static void main(String[] args) {
@@ -60,12 +73,12 @@ public class Picerija {
 				k = klients[rand.nextInt(5)];
 				ad = adrese[rand.nextInt(3)];
 				tel = TelNr[rand.nextInt(5)];
-				c = Pica.cena(m, p, izm, piegade, vaiUzk, vaiDzer);
 				
-				if(piegade == true) {
-					pas = new Pica(ad, k, m, p, u, dz, tel, izm, c, piegade, vaiUzk, vaiDzer);
-				}else
-					pas = new Pica(k, m, p, u, dz, izm, c, piegade, vaiUzk, vaiDzer);
+				double cena = Pica.cena(m, p, izm, piegade, vaiUzk, vaiDzer);
+				if(piegade)
+				    pas = new Pica(ad, k, m, p, u, dz, tel, izm, cena, piegade, vaiUzk, vaiDzer);
+				else
+				    pas = new Pica(k, m, p, u, dz, izm, cena, piegade, vaiUzk, vaiDzer);
 				
 				Pasutijumi.add(pas);
 			}
@@ -80,12 +93,14 @@ public class Picerija {
 			switch(opc) {
 			case 0:
 				if(!Pasutijumi.isEmpty()) {
-					Izpilditie.add(Pasutijumi.poll());
-					maks += c;
+					Pica apkalpota = Pasutijumi.poll();
+					Izpilditie.add(apkalpota);
+					maks += apkalpota.cena;  
 					JOptionPane.showMessageDialog(null,
 							"Klients apkalpots."
-							+ "\nIekasētā nauda: " +maks, "Informācija", JOptionPane.INFORMATION_MESSAGE);
-				}
+							+ "\nIekasētā nauda: " +apkalpota.cena+"\nKopējā summa: "+maks, "Informācija", JOptionPane.INFORMATION_MESSAGE);
+				}else JOptionPane.showMessageDialog(null,
+						"Nav klientu, ej atpūsties.", "Informācija", JOptionPane.INFORMATION_MESSAGE);
 				break;
 				
 			case 1:
@@ -152,14 +167,104 @@ public class Picerija {
 				break;
 				
 			case 4:
-				
+				if(!Pasutijumi.isEmpty() && Izpilditie.isEmpty())
+					JOptionPane.showMessageDialog(null, "Tu nopietni ņem pauzi? Tu neesi pat neko izdarījis!", 
+							"Aij aij aij", JOptionPane.WARNING_MESSAGE);
+				else if(!Pasutijumi.isEmpty() && !Izpilditie.isEmpty())
+						JOptionPane.showMessageDialog(null, "Nu tu jau neesi izdarījis visus pasūtījumus, "
+								+ "bet nu labi...", 
+								"Nu gan slinkais", JOptionPane.WARNING_MESSAGE);
+				else if(Pasutijumi.isEmpty() && !Izpilditie.isEmpty())
+							JOptionPane.showMessageDialog(null, "Tu visu izpildīji? "
+									+ "Tad tik tiešām esi nopelnījis pauzi!", 
+									"Malacis!", JOptionPane.WARNING_MESSAGE);
 				break;
 			}
 			}while(opc != 4);
 			break;
 		case 1:
+			String[] klients = {"Pasūtīt picu", "Cik ir pirms manis?", "Iet prom"};
+			JOptionPane.showMessageDialog(null, "Sveicināti picērijā!", "Sveiki.", JOptionPane.PLAIN_MESSAGE);
 			
-			break;
+			
+			do {
+				opc = JOptionPane.showOptionDialog(null,"Izvēlies darbību:", "Opcijas", 
+						JOptionPane.DEFAULT_OPTION, 
+						JOptionPane.INFORMATION_MESSAGE, null, klients, klients[0]);
+				switch(opc) {
+				case 0:
+					if(maks>5.0) {
+					int poga = JOptionPane.showConfirmDialog(null, "Vai sūti ar piegādi?", "Pasūtījuma informācija",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					if(poga == -1)
+					break;
+					
+					boolean piegade = (poga == 0)? true:false;
+					
+					poga = JOptionPane.showConfirmDialog(null, "Vai ņemsi uzkodas?", "Pasūtījuma informācija",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					boolean uzk = (poga == 0)? true:false;
+					if(uzk == true) 
+						{int uz = JOptionPane.showOptionDialog(null,"kādas uzkodas ņemsi?", "Opcijas", 
+							JOptionPane.DEFAULT_OPTION, 
+							JOptionPane.INFORMATION_MESSAGE, null, uzkodas, uzkodas[0]);
+						}
+					poga = JOptionPane.showConfirmDialog(null, "Vai ņemsi dzērienu?", "Pasūtījuma informācija",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					boolean dze = (poga == 0)? true:false;
+					if(dze == true) 	{
+						int dzrns = JOptionPane.showOptionDialog(null,"kādas uzkodas ņemsi?", "Opcijas", 
+						JOptionPane.DEFAULT_OPTION, 
+						JOptionPane.INFORMATION_MESSAGE, null, dzerieni, dzerieni[0]);
+					}
+				}else
+					JOptionPane.showMessageDialog(null, "Nepietiek naudas!! Ej strādāt!", "Bezdarbnieks...", 
+							JOptionPane.ERROR_MESSAGE);
+					break;
+					
+				case 1:
+					if (!Pasutijumi.isEmpty()) {
+				        String cilveks = virknesParbaude("Kā tevi sauc?", "Kate");
+				        if (cilveks == null) break;
+
+				        int kartasNr = 0;
+				        boolean atrasts = false;
+
+				        for (Pica picaObj  : Pasutijumi) {
+				            if (picaObj .klients.equalsIgnoreCase(cilveks)) {
+				                atrasts = true;
+				                break;
+				            }
+				            kartasNr++;
+				        }
+
+				        if (atrasts) {
+				            JOptionPane.showMessageDialog(null,
+				                "Pirms tevis stāv " + kartasNr + " cilvēki",
+				                "Informācija", JOptionPane.INFORMATION_MESSAGE);
+				        } else {
+				            JOptionPane.showMessageDialog(null,
+				                "Nemānies, tu pat neesi pasūtījis!", "Brīdinājums",
+				                JOptionPane.WARNING_MESSAGE);
+				        }
+				    } else {
+				        JOptionPane.showMessageDialog(null,
+				            "Rindā neviens nestāv!", "Tukša rinda",
+				            JOptionPane.INFORMATION_MESSAGE);
+				    }
+					break;
+					
+				case 2:
+					
+					JOptionPane.showMessageDialog(null, "Vai mēs tiešām esam tik neveiksmīga picērija? "
+							+ "Jeb tev nepietiek naudas?", "Nākat atpakaļ...", JOptionPane.QUESTION_MESSAGE);
+					
+					break;
+				
+				}
+				
+			}while(opc != 2);
+			
 			}
 		
 		

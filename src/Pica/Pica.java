@@ -7,6 +7,10 @@ public class Pica {
 	double cena;
 	boolean piegade, vaiUzk, vaiDzer;
 	
+	public String getKlients() {
+		return klients;
+	}
+	
 	public Pica(String klients, String merces, String piedevas, String uzkodas, String dzeriens, 
 			int izmers, double cena, boolean piegade, boolean vaiUzk, boolean vaiDzer) {
 		this.piegade = piegade;
@@ -42,33 +46,33 @@ public class Pica {
 		this.cena = cena;
 		
 	}
-	  
+	
 	public static double cena(String merces, String piedevas, int izmers, boolean piegade, boolean vaiUzk, boolean vaiDzer) {
 		double cena = 0.0;
 		if(izmers == 25) {
-			cena = 3;
+			cena = 3.0;
 			if(vaiUzk == true || vaiDzer == true) cena += 3.5;
-			if(piegade == true) cena += 5;
+			if(piegade == true) cena += 5.0;
 		}
 		else if(izmers == 30) {
-			cena = 5;
+			cena = 5.0;
 			if(vaiUzk == true || vaiDzer == true) cena += 3.5;
-			if(piegade == true) cena += 5;
+			if(piegade == true) cena += 5.0;
 		}
 		else if(izmers == 40) {
-			cena = 7;
+			cena = 7.0;
 			if(vaiUzk == true || vaiDzer == true) cena += 3.5;
-			if(piegade == true) cena += 5;
+			if(piegade == true) cena += 5.0;
 		}
 		else if(izmers == 45) {
 			cena = 8.5;
 			if(vaiUzk == true || vaiDzer == true) cena += 3.5;
-			if(piegade == true) cena += 5;
+			if(piegade == true) cena += 5.0;
 		}
 		else if(izmers == 50) {
-			cena = 10;
+			cena = 10.0;
 			if(vaiUzk == true || vaiDzer == true) cena += 3.5;
-			if(piegade == true) cena += 5;
+			if(piegade == true) cena += 5.0;
 		}
 		 return cena;
 	}
