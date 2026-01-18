@@ -1,11 +1,10 @@
 package Pica;
 
 public class Pica {
-	String adrese, piedevas, merces, klients, uzkodas, dzeriens;
-	int TelNr;
+	String adrese, piedevas, merces, klients, uzkodas, dzeriens, TelNr;
 	int izmers;
 	double cena;
-	boolean piegade, vaiUzk, vaiDzer;
+	boolean piegade, vaiUzk, vaiDzer, irAktivaisKlients = false;
 	
 	public String getKlients() {
 		return klients;
@@ -29,7 +28,7 @@ public class Pica {
 	}
 	
 	public Pica(String adrese, String klients, String merces, String piedevas, String uzkodas, 
-			String dzeriens, int TelNr, int izmers, double cena, boolean piegade, boolean vaiUzk, boolean vaiDzer) {
+			String dzeriens, String TelNr, int izmers, double cena, boolean piegade, boolean vaiUzk, boolean vaiDzer) {
 		this.piegade = piegade;
 		this.adrese = adrese;
 		this.klients = klients;

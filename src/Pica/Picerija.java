@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.Timer;
 
 
 public class Picerija {
@@ -36,13 +37,36 @@ public class Picerija {
 	static int[] izmers = {25, 30, 40, 45, 50};
 	static boolean piegade, vaiUzk, vaiDzer;
 	static String[] adrese = {"Zāļu iela 54", "Krūmu iela 2", "O. Kalpaka iela 39"};
-	static int[] TelNr = {26748391, 29185046, 62371948, 26897425, 29516038};
+	static String[] TelNr = {"+371 26748391", "+371 29185046", "+371 62371948", "+371 26897425", "+371 29516038"};
 	static double maks = 0.0;
+	static boolean klientsAktivs = false;
+	static String aktivaisKlients = null;
+	static boolean klientsRindaAktiva = false; 
+
 	
 	public static void main(String[] args) {
 		int izvele, opc;
 		Random rand = new Random();
 		Pica pas = null;
+		
+		//laiks, pēc kura, ja atrodies klienta interfeisā, notiek apkalposana 
+		Timer apkalposana = new Timer(3000, e -> {
+		    
+		    if (klientsAktivs && klientsRindaAktiva && !Pasutijumi.isEmpty()) {
+		        Pica gatava = Pasutijumi.poll();   
+		        Izpilditie.add(gatava);             
+		        maks += gatava.cena;
+
+		       
+		        if (gatava.klients.equalsIgnoreCase(aktivaisKlients)) {
+		            JOptionPane.showMessageDialog(null, "Jūsu pica ir gatava!",
+		                "Gatavs!", JOptionPane.INFORMATION_MESSAGE
+		            );
+		        }
+		    }
+		});
+		apkalposana.start();
+
 		
 		do {
 		izvele = JOptionPane.showOptionDialog(null,"Izvēlies statusu:", "Statuss", 
@@ -53,8 +77,8 @@ public class Picerija {
 		case 0:
 			
 			int skaits = rand.nextInt(5)+1;
-			String m, p, k, u, dz, ad;
-			int izm, tel;
+			String m, p, k, u, dz, ad, tel;
+			int izm;
 			
 			
 			for(int i=0; i<skaits; i++) {
@@ -162,8 +186,40 @@ public class Picerija {
 				break;
 				
 			case 3:
-				JOptionPane.showMessageDialog(null, "Picu sev uztaisīt nevari, tad jāņem pauze un jāiet uzsūtīt!", 
+				JOptionPane.showMessageDialog(null, "Tu par daudz gribi, bet ok.", 
 						"Tā nevar!", JOptionPane.WARNING_MESSAGE);
+				
+				 int mer = JOptionPane.showOptionDialog(null,"Kādas mērces liksi?", "Opcijas",
+		                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, merces, merces[0]);
+		            String merce = merces[mer];
+
+		            int pied = JOptionPane.showOptionDialog(null,"Kādas piedevas liksi?", "Opcijas",
+		                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, piedevas, piedevas[0]);
+		            String piedeva = piedevas[pied];
+
+		            String uz = "nav";
+		            String dzrns = "nav";
+		            boolean vaiUzk = false;
+		            boolean vaiDzer = false;
+
+		            int izmInd = JOptionPane.showOptionDialog(null, "Cik lielu picu ņemsi?",
+		                    "Opcijas", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
+		                    new String[]{"25 cm","30 cm","40 cm","45 cm","50 cm"}, "25 cm");
+		            int izmr = izmers[izmInd];
+
+		            double cena = Pica.cena(merce, piedeva, izmr, false, false, false);
+		            maks -= cena;
+		            Pica darbiniekaPica = new Pica("Darbinieks", 
+		            		merce, piedeva, uz, dzrns, izmr, cena, false, vaiUzk, vaiDzer);
+
+		            Izpilditie.add(darbiniekaPica);
+		            maks += darbiniekaPica.cena;
+
+		            JOptionPane.showMessageDialog(null,
+		                    "Tava pica saglabāta izpildīto pasūtijumu sarakstā - "
+		                    + "protams, tev arī ir jāmaksā", "Darbinieks",
+		                    JOptionPane.INFORMATION_MESSAGE);
+
 				break;
 				
 			case 4:
@@ -175,7 +231,7 @@ public class Picerija {
 								+ "bet nu labi...", 
 								"Nu gan slinkais", JOptionPane.WARNING_MESSAGE);
 				else if(Pasutijumi.isEmpty() && !Izpilditie.isEmpty())
-							JOptionPane.showMessageDialog(null, "Tu visu izpildīji? "
+							JOptionPane.showMessageDialog(null, "Tu visu izdarīji? "
 									+ "Tad tik tiešām esi nopelnījis pauzi!", 
 									"Malacis!", JOptionPane.WARNING_MESSAGE);
 				break;
@@ -183,6 +239,8 @@ public class Picerija {
 			}while(opc != 4);
 			break;
 		case 1:
+			
+			klientsAktivs = true;
 			String[] klients = {"Pasūtīt picu", "Cik ir pirms manis?", "Iet prom"};
 			JOptionPane.showMessageDialog(null, "Sveicināti picērijā!", "Sveiki.", JOptionPane.PLAIN_MESSAGE);
 			
@@ -194,29 +252,89 @@ public class Picerija {
 				switch(opc) {
 				case 0:
 					if(maks>5.0) {
+						String adr = null;
+						String talr = null;
+						String uz = "nav";
+						String dzrns = "nav";
+
+						String kl = virknesParbaude("Kā jūs sauc?", "Agita");
+						aktivaisKlients = kl;
+
 					int poga = JOptionPane.showConfirmDialog(null, "Vai sūti ar piegādi?", "Pasūtījuma informācija",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					if(poga == -1)
 					break;
 					
 					boolean piegade = (poga == 0)? true:false;
+					if (piegade) {
+						do {
+					    adr = virknesParbaude("Jūsu adrese:", "Vānes iela");
+						}while(adr == null);
+					    do {
+					        talr = JOptionPane.showInputDialog("Ievadi tālruņa numuru");
+					    } while (talr == null || !Pattern.matches("^[+]{1}[1-9]{3}[2-9][0-9]{7}$", talr));
+					}
+
 					
 					poga = JOptionPane.showConfirmDialog(null, "Vai ņemsi uzkodas?", "Pasūtījuma informācija",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-					boolean uzk = (poga == 0)? true:false;
-					if(uzk == true) 
-						{int uz = JOptionPane.showOptionDialog(null,"kādas uzkodas ņemsi?", "Opcijas", 
-							JOptionPane.DEFAULT_OPTION, 
-							JOptionPane.INFORMATION_MESSAGE, null, uzkodas, uzkodas[0]);
-						}
+					vaiUzk = (poga == 0)? true:false;
+					if (vaiUzk) {
+					    int uzIndex = JOptionPane.showOptionDialog(
+					        null, "Kādas uzkodas ņemsi?", "Opcijas",
+					        JOptionPane.DEFAULT_OPTION,
+					        JOptionPane.INFORMATION_MESSAGE,
+					        null, uzkodas, uzkodas[0]
+					    );
+					    uz = uzkodas[uzIndex];
+					}
+
 					poga = JOptionPane.showConfirmDialog(null, "Vai ņemsi dzērienu?", "Pasūtījuma informācija",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-					boolean dze = (poga == 0)? true:false;
-					if(dze == true) 	{
-						int dzrns = JOptionPane.showOptionDialog(null,"kādas uzkodas ņemsi?", "Opcijas", 
-						JOptionPane.DEFAULT_OPTION, 
-						JOptionPane.INFORMATION_MESSAGE, null, dzerieni, dzerieni[0]);
+					vaiDzer = (poga == 0)? true:false;
+					if (vaiDzer) {
+					    int dzIndex = JOptionPane.showOptionDialog(
+					        null, "Kādu dzērienu ņemsi?", "Opcijas",
+					        JOptionPane.DEFAULT_OPTION,
+					        JOptionPane.INFORMATION_MESSAGE,
+					        null, dzerieni, dzerieni[0]
+					    );
+					    dzrns = dzerieni[dzIndex];
 					}
+
+					
+					String[] izmersTeksts = {"25 cm", "30 cm", "40 cm", "45 cm", "50 cm"};
+
+					int izmeraIndekss = JOptionPane.showOptionDialog(null, "Cik lielu picu ņemsi?",			//Lai varētu izvēlēties int tipa opcijas
+					        "Opcijas",  JOptionPane.DEFAULT_OPTION,  JOptionPane.INFORMATION_MESSAGE, 
+					        null,  izmersTeksts,  izmersTeksts[0]);
+					int izmeri = izmers[izmeraIndekss];
+
+					
+					int mer = JOptionPane.showOptionDialog(null,"kādas mērces liksi?", "Opcijas", 
+							JOptionPane.DEFAULT_OPTION, 
+							JOptionPane.INFORMATION_MESSAGE, null, merces, merces[0]);
+					String merce = merces[mer];
+					
+					int pied = JOptionPane.showOptionDialog(null,"kādas piedevas liksi?", "Opcijas", 
+							JOptionPane.DEFAULT_OPTION, 
+							JOptionPane.INFORMATION_MESSAGE, null, piedevas, piedevas[0]);
+					String piedeva = piedevas[pied];
+					
+					double cena = Pica.cena(merce, piedeva, izmeri, piegade, vaiUzk, vaiDzer);
+					maks -= cena;
+					if (piegade)
+					    pas = new Pica(adr, kl, merce, piedeva, uz, dzrns, talr,
+					                   izmeri, cena, piegade, vaiUzk, vaiDzer);
+					else
+					    pas = new Pica(kl, merce, piedeva, uz, dzrns,
+					                   izmeri, cena, piegade, vaiUzk, vaiDzer);
+
+					
+					Pasutijumi.add(pas);
+					klientsRindaAktiva = true;
+					
+					
 				}else
 					JOptionPane.showMessageDialog(null, "Nepietiek naudas!! Ej strādāt!", "Bezdarbnieks...", 
 							JOptionPane.ERROR_MESSAGE);
@@ -224,7 +342,9 @@ public class Picerija {
 					
 				case 1:
 					if (!Pasutijumi.isEmpty()) {
-				        String cilveks = virknesParbaude("Kā tevi sauc?", "Kate");
+						
+
+				        String cilveks = virknesParbaude("Kā tevi sauc?", "Agita");
 				        if (cilveks == null) break;
 
 				        int kartasNr = 0;
@@ -258,12 +378,18 @@ public class Picerija {
 					
 					JOptionPane.showMessageDialog(null, "Vai mēs tiešām esam tik neveiksmīga picērija? "
 							+ "Jeb tev nepietiek naudas?", "Nākat atpakaļ...", JOptionPane.QUESTION_MESSAGE);
-					
+					klientsAktivs = false;
+					aktivaisKlients = null;
+					klientsRindaAktiva = false;
+
 					break;
-				
 				}
 				
 			}while(opc != 2);
+			
+		case 2:
+			JOptionPane.showMessageDialog(null, "Līdz citai reizei!", "Uz redzi.", JOptionPane.PLAIN_MESSAGE);
+			break;
 			
 			}
 		
