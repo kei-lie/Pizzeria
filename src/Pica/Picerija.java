@@ -186,6 +186,7 @@ public class Picerija {
 				break;
 				
 			case 3:
+				if(maks>5.0) {
 				JOptionPane.showMessageDialog(null, "Tu par daudz gribi, bet ok.", 
 						"Tā nevar!", JOptionPane.WARNING_MESSAGE);
 				
@@ -219,7 +220,10 @@ public class Picerija {
 		                    "Tava pica saglabāta izpildīto pasūtijumu sarakstā - "
 		                    + "protams, tev arī ir jāmaksā", "Darbinieks",
 		                    JOptionPane.INFORMATION_MESSAGE);
-
+		            maks -= cena;
+		            JOptionPane.showMessageDialog(null, "Atlikusī nauda makā: "+maks+" EUR", "Naudas lietas.", JOptionPane.PLAIN_MESSAGE);
+				}else JOptionPane.showMessageDialog(null, "Tev nav naudas!", 
+						"Tā nevar!", JOptionPane.WARNING_MESSAGE);
 				break;
 				
 			case 4:
@@ -333,8 +337,8 @@ public class Picerija {
 					
 					Pasutijumi.add(pas);
 					klientsRindaAktiva = true;
-					
-					
+					maks -= cena;
+					JOptionPane.showMessageDialog(null, "Atlikusī nauda makā: "+maks+" EUR", "Naudas lietas.", JOptionPane.PLAIN_MESSAGE);
 				}else
 					JOptionPane.showMessageDialog(null, "Nepietiek naudas!! Ej strādāt!", "Bezdarbnieks...", 
 							JOptionPane.ERROR_MESSAGE);
