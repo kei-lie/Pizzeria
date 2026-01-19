@@ -255,7 +255,7 @@ public class Picerija {
 						JOptionPane.INFORMATION_MESSAGE, null, klients, klients[0]);
 				switch(opc) {
 				case 0:
-					if(maks>5.0) {
+					if(maks>=5.0) {
 						String adr = null;
 						String talr = null;
 						String uz = "nav";
@@ -337,12 +337,15 @@ public class Picerija {
 					    pas = new Pica(kl, merce, piedeva, uz, dzrns,
 					                   izmeri, cena, piegade, vaiUzk, vaiDzer);
 
-					
+					if(maks>cena) {
 					Pasutijumi.add(pas);
 					klientsRindaAktiva = true;
 					maks -= cena;
 					JOptionPane.showMessageDialog(null, "Atlikusī nauda makā: "+maks+" EUR", "Naudas lietas.", JOptionPane.PLAIN_MESSAGE);
-				}else
+					}else {JOptionPane.showMessageDialog(null, "Tev nav pietiekami naudas!", "Naudas lietas.", JOptionPane.PLAIN_MESSAGE);
+					}
+					break;
+					}else
 					JOptionPane.showMessageDialog(null, "Nepietiek naudas!! Ej strādāt!", "Bezdarbnieks...", 
 							JOptionPane.ERROR_MESSAGE);
 					break;
