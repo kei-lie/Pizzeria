@@ -276,7 +276,7 @@ public class Picerija {
 					    adr = virknesParbaude("Jūsu adrese:", "Vānes iela");
 						}while(adr == null);
 					    do {
-					        talr = JOptionPane.showInputDialog("Ievadi tālruņa numuru");
+					        talr = JOptionPane.showInputDialog("Ievadi tālruņa numuru", "+37129991000");
 					    } while (talr == null || !Pattern.matches("^[+]{1}[1-9]{3}[2-9][0-9]{7}$", talr));
 					}
 
@@ -329,7 +329,6 @@ public class Picerija {
 					String piedeva = piedevas[pied];
 					
 					double cena = Pica.cena(merce, piedeva, izmeri, piegade, vaiUzk, vaiDzer);
-					maks -= cena;
 					if (piegade)
 					    pas = new Pica(adr, kl, merce, piedeva, uz, dzrns, talr,
 					                   izmeri, cena, piegade, vaiUzk, vaiDzer);
