@@ -205,7 +205,7 @@ public class Picerija {
 
 		            int izmInd = JOptionPane.showOptionDialog(null, "Cik lielu picu ņemsi?",
 		                    "Opcijas", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
-		                    new String[]{"25 cm","30 cm","40 cm","45 cm","50 cm"}, "25 cm");
+		                    new String[]{"25 cm(3.0 EUR)", "30 cm(5.0 EUR)", "40 cm(7.0 EUR)", "45 cm(8.5 EUR)", "50 cm(10.0 EUR)"}, "25 cm(3.0 EUR)");
 		            int izmr = izmers[izmInd];
 
 		            double cena = Pica.cena(merce, piedeva, izmr, false, false, false);
@@ -264,7 +264,8 @@ public class Picerija {
 						String kl = virknesParbaude("Kā jūs sauc?", "Agita");
 						aktivaisKlients = kl;
 
-					int poga = JOptionPane.showConfirmDialog(null, "Vai sūti ar piegādi?\nPar piegādi jāmaksā 5.0 EUR", "Pasūtījuma informācija",
+					int poga = JOptionPane.showConfirmDialog(null, "Vai sūti ar piegādi?"
+							+ "\nPar piegādi jāmaksā 5.0 EUR", "Pasūtījuma informācija",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					if(poga == -1)
 					break;
@@ -280,7 +281,8 @@ public class Picerija {
 					}
 
 					
-					poga = JOptionPane.showConfirmDialog(null, "Vai ņemsi uzkodas?\nPar uzkodām jāmaksā 3.5 EUR", "Pasūtījuma informācija",
+					poga = JOptionPane.showConfirmDialog(null, "Vai ņemsi uzkodas?"
+							+ "\nPar uzkodām jāmaksā 3.5 EUR", "Pasūtījuma informācija",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					vaiUzk = (poga == 0)? true:false;
 					if (vaiUzk) {
@@ -293,7 +295,8 @@ public class Picerija {
 					    uz = uzkodas[uzIndex];
 					}
 
-					poga = JOptionPane.showConfirmDialog(null, "Vai ņemsi dzērienu?\\nPar dzērienu jāmaksā 3.5 EUR", "Pasūtījuma informācija",
+					poga = JOptionPane.showConfirmDialog(null, "Vai ņemsi dzērienu?"
+							+ "\nPar dzērienu jāmaksā 3.5 EUR", "Pasūtījuma informācija",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					vaiDzer = (poga == 0)? true:false;
 					if (vaiDzer) {
